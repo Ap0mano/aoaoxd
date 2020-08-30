@@ -34,7 +34,7 @@ fs.readdir(process.cwd(), (err, xd) => {
                    console.log(`file ${files[a].magenta} is a copy of ${i.magenta}\n, diff: ${numDiffPixels}`)
                    total++;
                    txt += `\n\nfile ${files[a].magenta} is a copy of ${i.magenta}\n, diff: ${numDiffPixels}`;
-                   // fs.unlinkSync(files[a])
+                   fs.unlinkSync(files[a])
                    files.splice(a, 1)
                    continue;
                  }
@@ -48,7 +48,7 @@ fs.readdir(process.cwd(), (err, xd) => {
                    total++;
 
                    txt += `\n\nfile ${files[a].magenta} is a copy of ${i.magenta}\n, diff: ${numDiffPixels}`;
-                   // fs.unlinkSync(files[a])
+                   fs.unlinkSync(files[a])
                    files.splice(a, 1)
                    continue;
                  }
