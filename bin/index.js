@@ -1,13 +1,22 @@
 #!/usr/bin/env node
 
-console.log();
-
 const fs = require('fs');
 const pixelmatch = require('pixelmatch');
 var colors = require('colors');
 let total = 0;
 let decode = require('image-decode')
 let probe = require('probe-image-size')
+const io = require('@pm2/io')
+
+const xsec = io.meter({
+  name: 'checks/sec',
+  id: 'app/requests/volume'
+})
+
+const count = io.counter({
+  name: 'Realtime checks count',
+  id: 'app/realtime/checks'
+});
 
 let txt = '';
 
@@ -25,6 +34,8 @@ fs.readdir(process.cwd(), (err, xd) => {
            if (dif < -3 || dif > 3) continue;
              if (i == files[a]) continue;
              if (files[a].includes("_p0_")) continue;
+             count.inc();
+             xsec.mark();
              let n = fs.statSync(i).size - fs.statSync(files[a]).size;
              if (-3000 <= n && n <= 3000) {
                let img1 = decode(fs.readFileSync(files[a]));
