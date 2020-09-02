@@ -13,8 +13,6 @@
   },
   "dependencies": {
     "colors": "^1.4.0",
-    "image-decode": "^1.2.2",
-    "pixelmatch": "^5.2.1",
-    "probe-image-size": "^5.0.0"
+    "image-hash": "^4.0.1"
   }
 }
