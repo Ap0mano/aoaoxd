@@ -61,7 +61,7 @@ function compareImages(arr) {
       if (diff.length < 9) {
         console.log(`${arr[a].file} is a copy of ${i.file}`)
         total++;
-        fs.unlinkSync(arr[a].file)l
+        fs.unlinkSync(arr[a].file)
         arr.splice(a, 1)
         continue;
       }
