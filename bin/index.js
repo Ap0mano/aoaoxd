@@ -4,59 +4,45 @@ const fs = require('fs');
 const { imageHash } = require('image-hash');
 var colors = require('colors');
 let total = 0;
+const sharp = require('sharp')
 
 
 // let txt = '';
 
 if (!process.argv[2]) return console.log("please include file extension (jpg/png)");
 if (process.argv[2] != "jpg" && process.argv[2] != "png") return console.log("png and jpg only");
-// console.log(process.argv[2])
+console.time("time elapsed")
 
 fs.readdir(process.cwd(), (err, xd) => {
   let files = xd.filter(x => x.endsWith("." + process.argv[2]))
   console.log(`found ${files.length} files`)
   createArr(files);
-
-  // fs.writeFileSync('./xd.txt', txt)
 })
-
-
-
-
-
-
-
-function hashImages(arr) {
-  let a = [];
-  let ind = 0;
-  for (i in arr) {
-    let name = arr[i];
-    imageHash(name, 12, true, (error, data) => {
-      if (error) throw error;
-      a.push({
-        file: name,
-        hash: data
-      });
-      console.log(ind, arr.length)
-    });
-  }
-  compareImages(a)
-}
 
 
 function createArr (arr) {
 	return new Promise((resolve, reject) => {
+    if (process.argv[2] === "jpg") process.argv[2] = "jpeg";
     let a = [];
-    let ind = 0;
     arr.forEach((item, i) => {
-      imageHash(item, 12, false, (error, data) => {
-        if (error) throw error;
-        a.push({
-          file: item,
-          hash: data
-        });
-        ind++;
-      });
+      sharp(item)
+        .resize(16, 16)
+        .greyscale()
+        .toBuffer()
+        .then(data => {
+          imageHash({
+            ext: 'image/'+process.argv[2],
+            data: data
+          }, 12, false, (error, data) => {
+            if (error) throw error;
+            a.push({
+              file: item,
+              hash: data
+            });
+          });
+         })
+        // .catch(err => { console.log(err) })
+
     });
     setTimeout(() => {
       compareImages(a)
@@ -65,21 +51,17 @@ function createArr (arr) {
 };
 
 
-
-
-
-
 function compareImages(arr) {
-  console.time("time elapsed")
-
   for (i of arr) {
     for (a in arr) {
       if (i.file == arr[a].file) continue;
+      let dif = arr[a].file.match(/\d+/)[0] - i.file.match(/\d+/)[0]
+      if (dif < -15 || dif > 15) continue;
       var diff = getDifference(i.hash, arr[a].hash)
-      if (diff.length < 6) {
+      if (diff.length < 9) {
         console.log(`${arr[a].file} is a copy of ${i.file}`)
         total++;
-        fs.unlinkSync(arr[a].file)
+        fs.unlinkSync(arr[a].file)l
         arr.splice(a, 1)
         continue;
       }
